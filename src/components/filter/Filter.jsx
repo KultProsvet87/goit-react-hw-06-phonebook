@@ -1,6 +1,9 @@
 import PropTypes from 'prop-types';
 
 export const Filter = ({ onFilterChange, filterValue }) => {
+  const handleChange = e => {
+    onFilterChange(e.target.value);
+  };
   return (
     <label>
       <p>Find contact by name</p>
@@ -8,7 +11,7 @@ export const Filter = ({ onFilterChange, filterValue }) => {
         type="text"
         name="filter"
         value={filterValue}
-        onChange={onFilterChange}
+        onChange={handleChange}
       />
     </label>
   );

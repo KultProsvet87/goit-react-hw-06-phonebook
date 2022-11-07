@@ -1,29 +1,20 @@
-import { Component } from 'react';
+import { useState, useEffect } from 'react';
+
 import { ContactForm } from './contactForm/contactForm';
 import { Contacts } from './contacts/contacts';
 import { Filter } from './filter/Filter';
 
-export class App extends Component {
-  state = {
-    contacts: [],
-    filter: '',
-  };
+export const App = () => {
+  const [contacts, setContacts] = useState(
+    () => JSON.parse(localStorage.getItem('contacts')) ?? []
+  );
+  const [filter, setFilter] = useState('');
 
-  componentDidMount() {
-    const contacts = localStorage.getItem('contacts');
-    if (contacts) {
-      this.setState({ contacts: JSON.parse(contacts) });
-    }
-  }
-  componentDidUpdate(prevProps, prevState) {
-    const { contacts } = this.state;
-    if (contacts !== prevState.contacts) {
-      localStorage.setItem('contacts', JSON.stringify(contacts));
-    }
-  }
+  useEffect(() => {
+    localStorage.setItem('contacts', JSON.stringify(contacts));
+  }, [contacts]);
 
-  onFormSubmite = newContact => {
-    const { contacts } = this.state;
+  const onFormSubmite = newContact => {
     if (
       contacts.find(
         ({ name }) => name.toLowerCase() === newContact.name.toLowerCase()
@@ -32,38 +23,21 @@ export class App extends Component {
       alert('This contact already added');
       return;
     }
-    this.setState(prev => {
-      return { contacts: [...prev.contacts, newContact], name: '' };
+    setContacts(prev => {
+      return [...prev, newContact];
     });
   };
 
-  onFilterChange = e => {
-    const { name, value } = e.currentTarget;
-    this.setState({ [name]: value });
+  const delContact = contactID => {
+    setContacts(prev => [...prev.filter(contact => contact.id !== contactID)]);
   };
-
-  delContact = contactID => {
-    this.setState(prev => ({
-      contacts: [...prev.contacts.filter(contact => contact.id !== contactID)],
-    }));
-  };
-
-  render() {
-    return (
-      <div>
-        React homework template
-        <h1>Phonebook</h1>
-        <ContactForm onSubmit={this.onFormSubmite} />
-        <Filter
-          FilterValue={this.state.filter}
-          onFilterChange={this.onFilterChange}
-        />
-        <Contacts
-          contacts={this.state.contacts}
-          filter={this.state.filter}
-          delContact={this.delContact}
-        />
-      </div>
-    );
-  }
-}
+  return (
+    <div>
+      React homework template
+      <h1>Phonebook</h1>
+      <ContactForm onSubmit={onFormSubmite} />
+      <Filter FilterValue={filter} onFilterChange={setFilter} />
+      <Contacts contacts={contacts} filter={filter} delContact={delContact} />
+    </div>
+  );
+};
