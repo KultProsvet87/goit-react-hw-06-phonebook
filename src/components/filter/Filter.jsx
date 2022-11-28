@@ -1,8 +1,12 @@
-import PropTypes from 'prop-types';
+import { useDispatch, useSelector } from 'react-redux';
+import { filterChange } from 'redux/reducers/filterReducer';
 
-export const Filter = ({ onFilterChange, filterValue }) => {
+export const Filter = () => {
+  const filterValue = useSelector(state => state.filter);
+  const dispatch = useDispatch();
+
   const handleChange = e => {
-    onFilterChange(e.target.value);
+    dispatch(filterChange(e.target.value));
   };
   return (
     <label>
@@ -15,9 +19,4 @@ export const Filter = ({ onFilterChange, filterValue }) => {
       />
     </label>
   );
-};
-
-Filter.propTypes = {
-  onFilterChange: PropTypes.func.isRequired,
-  filterValue: PropTypes.string,
 };
